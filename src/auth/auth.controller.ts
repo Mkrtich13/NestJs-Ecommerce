@@ -1,9 +1,11 @@
+import { SellerGuard } from './../guards/seller.guard';
 import { AuthService } from './auth.service';
 import { LoginDTO, RegisterDTO } from './auth.dto';
 import { UserService } from './../shared/user.service';
 import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/types/user';
+import { User } from '../types/user';
+import { UserDecorator } from '../utils/user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -11,12 +13,6 @@ export class AuthController {
         private readonly userService: UserService,
         private readonly authService: AuthService,
     ) {}
-
-    @Get()
-    @UseGuards(AuthGuard('jwt'))
-    tempAuth() {
-        return {auth: 'it work'};
-    }
 
     @Post('login')
     async login(@Body() userDTO: LoginDTO): Promise<{user: User, token: string}> {

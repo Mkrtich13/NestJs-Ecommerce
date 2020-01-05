@@ -11,7 +11,7 @@ export const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    sellor: {
+    seller: {
         type: Boolean,
         default: false,
     },

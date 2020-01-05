@@ -1,7 +1,10 @@
+import { LoggingInterceptor } from './logging.interceptor';
+import { HttpExeptionFilter } from './http-exeption.filter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserSchema } from 'src/models/user.schema';
+import { UserSchema } from '../models/user.schema';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
     imports: [
@@ -11,7 +14,17 @@ import { UserSchema } from 'src/models/user.schema';
             ],
         ),
     ],
-    providers: [UserService],
+    providers: [
+        UserService,
+        {
+            provide: APP_FILTER,
+            useClass: HttpExeptionFilter,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: LoggingInterceptor,
+        }
+    ],
     exports: [UserService],
 })
 export class SharedModule {}
