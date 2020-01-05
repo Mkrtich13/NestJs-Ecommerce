@@ -1,7 +1,9 @@
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
-export interface LoginDTO {
+export class LoginDTO {
+    @IsEmail()
     email: string;
+    @IsNotEmpty()
     password: string;
 }
 
@@ -9,6 +11,7 @@ export class RegisterDTO {
     @IsEmail()
     email: string;
     name: string;
+    @IsNotEmpty()
     password: string;
     seller?: boolean;
 }

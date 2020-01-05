@@ -15,7 +15,7 @@ export class UserService {
         return user.depopulate('password');
     }
 
-    async create(userDTO: RegisterDTO) {
+    async create(userDTO: RegisterDTO): Promise<User> {
         const { email } = userDTO;
 
         const user = await this.userModel.findOne({email});
@@ -30,7 +30,7 @@ export class UserService {
         return this.sanitizeUser(createdUser);
     }
 
-    async findByLogin(userDTO: LoginDTO) {
+    async findByLogin(userDTO: LoginDTO): Promise<User> {
         const { email, password } = userDTO;
         const user = await this.userModel.findOne({email});
 
@@ -38,12 +38,16 @@ export class UserService {
             throw new HttpException('Incorrect credentials', HttpStatus.UNAUTHORIZED);
         }
 
-        if(password !== '' && await bcrypt.compare(password, user.password)) {
-            return {success: true, user: this.sanitizeUser(user)};
+        if(await bcrypt.compare(password, user.password)) {
+            return this.sanitizeUser(user);
         } else {
             throw new HttpException('Incorrect credentials', HttpStatus.UNAUTHORIZED);
         }
 
+    }
 
+    async findByPayload(payload: any): Promise<any> {
+        const { email } = payload;
+        return await this.userModel.findOne({email});
     }
 }
