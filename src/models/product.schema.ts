@@ -12,5 +12,5 @@ export const ProductSchema = new mongoose.Schema({
     created: {
         type: Date,
         default: Date.now,
-    }
+    },
 });
