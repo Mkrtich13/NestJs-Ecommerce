@@ -41,13 +41,15 @@ export class ProductController {
 
     @Put(':id')
     @UseGuards(AuthGuard('jwt'), SellerGuard)
-    async update(@Param('id') id: string, @Body() product: UpdateProductDTO) {
-        return await this.productService.update(id, product);
+    async update(@Param('id') id: string, @Body() product: UpdateProductDTO, @UserDecorator() user: User) {
+        const { id: userId } = user;
+        return await this.productService.update(id, product, userId);
     }
 
     @Delete(':id')
     @UseGuards(AuthGuard('jwt'), SellerGuard)
-    async delete(@Param('id') id: string) {
-        return await this.productService.delete(id);
+    async delete(@Param('id') id: string, @UserDecorator() user: User) {
+        const { id: userId } = user;
+        return await this.productService.delete(id, userId);
     }
 }

@@ -1,7 +1,8 @@
+import { HttpStatus } from '@nestjs/common';
 import { User } from 'src/types/user';
 import { Product } from './../types/product';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateProductDTO, UpdateProductDTO } from './product.dto';
 
@@ -14,11 +15,23 @@ export class ProductService {
     }
 
     async getById(id: string): Promise<Product> {
-        return await this.productModel.findById(id).populate('owner');
+        const product = await this.productModel.findById(id).populate('owner');
+
+        if(!product) {
+            throw new HttpException('Product does not exist', HttpStatus.NO_CONTENT);
+        }
+
+        return product;
     }
 
     async getBySeller(userId: string): Promise<Product[]> {
-        return await this.productModel.find({owner: userId}).populate('owner');
+        const products = await this.productModel.find({owner: userId}).populate('owner');
+
+        if(products.length===0) {
+            throw new HttpException('Products not found', HttpStatus.NO_CONTENT);
+        }
+
+        return products;
     }
 
     async create(productDTO: CreateProductDTO, user: User): Promise<Product> {
@@ -27,15 +40,25 @@ export class ProductService {
         return product.populate('owner');
     }
 
-    async update(id: string, productDTO: UpdateProductDTO): Promise<Product> {
-        const product = await this.productModel.findById(id);
+    async update(id: string, productDTO: UpdateProductDTO, userId: string): Promise<Product> {
+        const product = await this.productModel.findById(id).populate('owner');
+
+        if(userId !== product.owner.toString()) {
+            throw new HttpException('You do not own this product', HttpStatus.UNAUTHORIZED);
+        }
+
         await product.update(productDTO);
 
-        return product.populate('owner');
+        return await this.productModel.findById(id).populate('owner');
     }
 
-    async delete(id: string): Promise<Product> {
-        const product = await this.productModel.findById(id);
+    async delete(id: string, userId: string): Promise<Product> {
+        const product = await this.productModel.findById(id).populate('owner');
+
+        if(userId !== product.owner.toString()) {
+            throw new HttpException('You do not own this product', HttpStatus.UNAUTHORIZED);
+        }
+
         await product.remove();
 
         return product.populate('owner');
