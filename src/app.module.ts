@@ -12,7 +12,7 @@ import { OrderModule } from './order/order.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI),
+    MongooseModule.forRoot(process.env.DATABASE_URL),
     SharedModule,
     AuthModule,
     ProductModule,
