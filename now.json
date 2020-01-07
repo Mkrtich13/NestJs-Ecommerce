@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "name": "ecommerce-now",
+    "name": "nest-ecommerce",
     "builds": [
       {
         "src": "dist/main.js",
